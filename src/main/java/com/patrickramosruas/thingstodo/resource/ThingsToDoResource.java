@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -26,32 +25,22 @@ public class ThingsToDoResource {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(thingsToDoService.findAll());
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ThingsToDoResponse> save(@RequestBody ThingsToDoRequest thingsToDoRequest){
+    @PostMapping()
+    public ResponseEntity<ThingsToDoEntity> save(@RequestBody ThingsToDoRequest thingsToDoRequest){
 
-        final ThingsToDoEntity thingsToDoEntity = thingsToDoService.save(thingsToDoRequest).orElseThrow();
-        final ThingsToDoResponse thingsToDoResponse = ThingsToDoResponse.builder()
-                .id(thingsToDoEntity.getId())
-                .title(thingsToDoEntity.getTitle())
-                .description((thingsToDoEntity.getDescription()))
-                .createdAt(thingsToDoEntity.getCreatedAt())
-                .expiresAt(thingsToDoEntity.getExpiresAt())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(thingsToDoResponse);
+        return thingsToDoService.save(thingsToDoRequest);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ThingsToDoResponse> deleteById(@PathVariable Long id){
+    public ResponseEntity<?> deleteById(@PathVariable Long id){
 
-        thingsToDoService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        return thingsToDoService.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ThingsToDoRequest thingsToDoRequest){
-        return thingsToDoService.update(id,thingsToDoRequest);
 
+        return thingsToDoService.update(id,thingsToDoRequest);
     }
 
 }

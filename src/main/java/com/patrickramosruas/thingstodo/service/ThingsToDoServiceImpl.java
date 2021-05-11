@@ -4,12 +4,12 @@ import com.patrickramosruas.thingstodo.entity.ThingsToDoEntity;
 import com.patrickramosruas.thingstodo.repository.ThingsToDoRepository;
 import com.patrickramosruas.thingstodo.resource.ThingsToDoRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class ThingsToDoServiceImpl implements ThingsToDoService {
     public final ThingsToDoRepository thingsToDoRepository;
 
     @Override
-    public Optional<ThingsToDoEntity> save(ThingsToDoRequest thingsToDoRequest) {
+    public ResponseEntity<ThingsToDoEntity> save(ThingsToDoRequest thingsToDoRequest) {
 
         final ThingsToDoEntity thingsToDoEntity = ThingsToDoEntity.builder()
                 .title(thingsToDoRequest.getTitle())
@@ -27,29 +27,40 @@ public class ThingsToDoServiceImpl implements ThingsToDoService {
                 .expiresAt(thingsToDoRequest.getExpiresAt())
                 .build();
 
-        return Optional.of(thingsToDoRepository.save(thingsToDoEntity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(thingsToDoRepository.save(thingsToDoEntity));
     }
 
     @Override
     public ResponseEntity update(Long id, ThingsToDoRequest thingsToDoRequest) {
         return thingsToDoRepository.findById(id)
-                .map(record -> {
-                    record.setCreatedAt(LocalDateTime.now());
-                    record.setDescription(thingsToDoRequest.getDescription());
-                    record.setTitle(thingsToDoRequest.getTitle());
-                    record.setExpiresAt(thingsToDoRequest.getExpiresAt());
-                    ThingsToDoEntity updated = thingsToDoRepository.save(record);
+                .map(toDo -> {
+                    toDo.setCreatedAt(LocalDateTime.now());
+                    toDo.setDescription(thingsToDoRequest.getDescription());
+                    toDo.setTitle(thingsToDoRequest.getTitle());
+                    toDo.setExpiresAt(thingsToDoRequest.getExpiresAt());
+                    ThingsToDoEntity updated = thingsToDoRepository.save(toDo);
                     return ResponseEntity.ok().body(updated);
                 }).orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public void deleteById(Long id) {
-        thingsToDoRepository.deleteById(id);
+    public ResponseEntity<?> deleteById(Long id) {
+        return thingsToDoRepository.findById(id)
+                .map(toDo -> {
+                    thingsToDoRepository.deleteById(id);
+                    return ResponseEntity.ok().build();
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    public List<ThingsToDoEntity> findAll() {
+    public List findAll() {
         return thingsToDoRepository.findAll();
+    }
+
+    @Override
+    public ResponseEntity findById(Long id) {
+        return thingsToDoRepository.findById(id)
+                .map(toDo-> ResponseEntity.ok().body(toDo))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
