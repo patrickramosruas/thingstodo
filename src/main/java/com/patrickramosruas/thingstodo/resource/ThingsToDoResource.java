@@ -1,7 +1,6 @@
 package com.patrickramosruas.thingstodo.resource;
 
 import com.patrickramosruas.thingstodo.entity.ThingsToDoEntity;
-import com.patrickramosruas.thingstodo.repository.ThingsToDoRepository;
 import com.patrickramosruas.thingstodo.service.ThingsToDoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +16,17 @@ import java.util.List;
 public class ThingsToDoResource {
 
     private final ThingsToDoService thingsToDoService;
-    private final ThingsToDoRepository thingsToDoRepository;
 
     @GetMapping()
     public ResponseEntity<List<ThingsToDoEntity>> findAll(){
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(thingsToDoService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(thingsToDoService.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity findById(@PathVariable Long id){
+
+        return thingsToDoService.findById(id);
     }
 
     @PostMapping()
@@ -42,5 +46,6 @@ public class ThingsToDoResource {
 
         return thingsToDoService.update(id,thingsToDoRequest);
     }
+
 
 }

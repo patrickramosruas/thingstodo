@@ -11,6 +11,7 @@ To complete the development, the followings tools were needed:
 Our Controller (Resource) will expose five HTTP methods (URI Restful):
 
 - List Things To Do (GET /thingstodo)
+- Find Thing To Do with ID (GET /thingstodo/{id})
 - Save Things To Do (POST /thingstodo)
 - Delete Things To Do (DELETE /thingstodo/{id})
 - Update Things To DO (PUT /thingstodo/{id})
